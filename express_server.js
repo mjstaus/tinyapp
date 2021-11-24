@@ -13,6 +13,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//Generates random string of 6 characters
+function generateRandomString() {
+  return Math.random().toString(36).slice(7) //Slice at 7 to return 6 character string
+}
+
 //ROUTES//
 app.get("/", (req, res) => {
   res.send("Hello!");
