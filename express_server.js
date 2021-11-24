@@ -15,7 +15,7 @@ const urlDatabase = {
 
 //Generates random string of 6 characters
 function generateRandomString() {
-  return Math.random().toString(36).slice(7) //Slice at 7 to return 6 character string
+  return Math.random().toString(36).slice(7); //Slice at 7 to return 6 character string
 }
 
 //ROUTES//
@@ -37,18 +37,24 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString()
+  const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`urls/${shortURL}`)
+  console.log(urlDatabase)
+  res.redirect(`urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-app.get("/urls/:id", (req, res) => {
-  const templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
+app.get("/urls/:shortURL", (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {
