@@ -24,6 +24,11 @@
         <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Login</button>
       </form>
     </div>
+    <div>
+      <% if(username){ %>
+      <h4 class="navbar-brand ml-2">Hello, <%= username %> </h4>
+      <% } %>
+    </div>
     </div>
   </nav>
 </header>
