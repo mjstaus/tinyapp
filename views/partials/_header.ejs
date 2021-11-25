@@ -29,8 +29,8 @@
     <% if(username){ %>
     <div>
       <form class="form-inline my-2 my-lg-0" action="/logout" method="POST">
+        <p class="navbar-brand ml-2 mb-0">Hello, <b><%= username %></b></p>
         <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Logout</button>
-        <p class="navbar-brand ml-2 mb-1">Hello, <b><%= username %></b></p>
       </form>
     </div>
     <% } %>
