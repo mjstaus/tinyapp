@@ -18,17 +18,22 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+    <% if(!username){ %>
     <div>
-      <form class="form-inline my-2 my-lg-0" action="/login" method="POST">
-        <input class="form-control mr-sm-2" name="username" type="text" placeholder="username">
-        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Login</button>
+        <form class="form-inline my-2 my-lg-0" action="/login" method="POST">
+          <input class="form-control mr-sm-2" name="username" type="text" placeholder="username">
+          <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Login</button>
+        </form>
+      </div>
+      <% } %>
+    <% if(username){ %>
+    <div>
+      <form class="form-inline my-2 my-lg-0" action="/logout" method="POST">
+        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Logout</button>
+        <p class="navbar-brand ml-2 mb-1">Hello, <b><%= username %></b></p>
       </form>
     </div>
-    <div>
-      <% if(username){ %>
-      <h4 class="navbar-brand ml-2">Hello, <%= username %> </h4>
-      <% } %>
-    </div>
+    <% } %>
     </div>
   </nav>
 </header>
