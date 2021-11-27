@@ -10,18 +10,26 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 const cookieParser = require("cookie-parser");
-app.use(cookieParser())
-
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-
+app.use(cookieParser());
 
 //Generates random string of 6 characters
 const generateRandomString = () => {
   return Math.random().toString(36).slice(7); //Slice at 7 to return 6 character string
 };
+
+//OBJECTS
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
+class User {
+  constructor(id, email, password) {
+    this.id = id;
+    this.email = email;
+    this.password = password;
+  }
+}
+const users = {};
 
 //ROUTES//
 app.get("/", (req, res) => {
@@ -45,8 +53,8 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"]}
-  res.render("urls_new", templateVars)  ;
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"]};
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -71,12 +79,23 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username).redirect("/urls")
-})
+  res.cookie("username", req.body.username).redirect("/urls");
+});
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username").redirect("/urls")
-})
+  res.clearCookie("username").redirect("/urls");
+});
+
+app.get("/registration", (req, res) => {
+  const templateVars = { username: req.cookies["username"]};
+  res.render("user_registration", templateVars);
+});
+
+app.post("/registration", (req, res) => {
+  const id = generateRandomString();
+  users[id] = new User(id, req.body.email, req.body.password);
+  res.redirect("urls");
+});
 
 app.listen(PORT, () => {
   console.log(`Tinyapp listening on port ${PORT}!🦄`);
