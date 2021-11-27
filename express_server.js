@@ -72,6 +72,9 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  if(!users[req.cookies["user_id"]]){
+    res.redirect("/login")
+  };
   const templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]],
