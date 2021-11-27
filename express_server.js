@@ -12,12 +12,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
-//Generates random string of 6 characters
-const generateRandomString = () => {
-  return Math.random().toString(36).slice(7); //Slice at 7 to return 6 character string
+
+///// HELPER FUNCTIONS /////
+////////////////////////////
+//Generate random string of x number alphanumeric characters
+const generateRandomString = (x) => {
+  return Math.random().toString(36).slice(x + 1);
 };
 
-//OBJECTS
+const emailLookup = (object, email) => { //Searches for email in object - returns true if email is present
+  for (property in object) {
+    if (email === object[property]["email"]) return true;
+    return false;
+  }
+}
+
+///// OBJECTS /////
+//////////////////
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
@@ -29,9 +40,10 @@ class User {
     this.password = password;
   }
 }
-const users = {};
+const users = {}
 
-//ROUTES//
+///// ROUTES /////
+/////////////////
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -49,7 +61,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
+  const shortURL = generateRandomString(6);
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`urls/${shortURL}`);
 });
@@ -101,8 +113,15 @@ app.get("/registration", (req, res) => {
 });
 
 app.post("/registration", (req, res) => {
-  const id = generateRandomString();
+  if(!req.body.email || !req.body.password){
+    res.status(400).send("Please enter a valid username and password")
+  }
+  if(emailLookup(users, req.body.email)){
+    res.status(400).send(`Email address ${req.body.email} already in use`)
+  }
+  const id = generateRandomString(6);
   users[id] = new User(id, req.body.email, req.body.password);
+  console.log(users)
   res.cookie("user_id", id).redirect("urls");
 });
 
