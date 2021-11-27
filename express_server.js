@@ -22,9 +22,8 @@ const generateRandomString = (x) => {
 
 const emailLookup = (object, email) => { //Searches for email in object - returns true if email is present
   for (property in object) {
-    if (email === object[property]["email"]) return true;
-    return false;
-  }
+    if (email === object[property]["email"]) return object[property];
+  }return undefined;
 }
 
 ///// OBJECTS /////
@@ -40,7 +39,13 @@ class User {
     this.password = password;
   }
 }
-const users = {}
+const users = {
+  user1: {
+    id: "user1",
+    email: "mjstaus@gmail.com",
+    password: "password",
+  }
+}
 
 ///// ROUTES /////
 /////////////////
@@ -99,8 +104,19 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("users_login", templateVars);
+});
+
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username).redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = emailLookup(users, email)
+  if(!user || user.password !== password){
+    res.status(403).send("Invalid email address and/or password")
+  }
+  res.cookie("user_id", user.id).redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
@@ -113,21 +129,21 @@ app.get("/registration", (req, res) => {
 });
 
 app.post("/registration", (req, res) => {
-  if(!req.body.email || !req.body.password){
-    res.status(400).send("Please enter a valid username and password")
+  const email = req.body.email
+  const password = req.body.password
+  console.log('users:', users)
+  console.log("email:", email)
+  console.log("email lookup:", emailLookup(users, email))
+  if(!email || !password){
+    res.status(400).send("Please enter a valid email address and password")
   }
-  if(emailLookup(users, req.body.email)){
-    res.status(400).send(`Email address ${req.body.email} already in use`)
+  if(emailLookup(users, email)){
+    res.status(400).send(`Email address ${email} already in use`)
   }
   const id = generateRandomString(6);
-  users[id] = new User(id, req.body.email, req.body.password);
+  users[id] = new User(id, email, password);
   console.log(users)
   res.cookie("user_id", id).redirect("urls");
-});
-
-app.get("/login", (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]] };
-  res.render("users_login", templateVars);
 });
 
 app.listen(PORT, () => {
