@@ -19,11 +19,13 @@
       </div>
     </div>
     <% if(!user){ %>
-    <div>
-        <form class="form-inline my-2 my-lg-0" action="/login" method="POST">
+    <div class="navbar-nav justify-content-end">
+        <!-- <form class="form-inline my-2 my-lg-0" action="/login" method="POST">
           <input class="form-control mr-sm-2" name="userEmail" type="text" placeholder="user@email.com">
           <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Login</button>
-        </form>
+        </form> -->
+            <a class="nav-link" href="/login">Login</a>
+            <a class="nav-link" href="/registration">Sign Up</a>
       </div>
       <% } %>
     <% if(user){ %>
