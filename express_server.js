@@ -7,7 +7,7 @@ app.set("view engine", "ejs");
 
 // Body-parser library will convert the request body from a Buffer into string that we can read. It will then add the data to the req object under the key body.//
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
@@ -19,8 +19,8 @@ const generateRandomString = () => {
 
 //OBJECTS
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b2xVn2: "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com",
 };
 class User {
   constructor(id, email, password) {
@@ -41,24 +41,33 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"]};
+  const templateVars = {
+    urls: urlDatabase,
+    user: users[req.cookies["user_id"]]
+  };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"]};
+  const templateVars = {
+    urls: urlDatabase,
+    user: users[req.cookies["user_id"]],
+  };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"] };
+  const templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    user: users[req.cookies["user_id"]],
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -83,18 +92,18 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username").redirect("/urls");
+  res.clearCookie("user_id").redirect("/urls");
 });
 
 app.get("/registration", (req, res) => {
-  const templateVars = { username: req.cookies["username"]};
+  const templateVars = { user: users[req.cookies["user_id"]] };
   res.render("user_registration", templateVars);
 });
 
 app.post("/registration", (req, res) => {
   const id = generateRandomString();
   users[id] = new User(id, req.body.email, req.body.password);
-  res.cookie("user_id", id).redirect("/urls");
+  res.cookie("user_id", id).redirect("urls");
 });
 
 app.listen(PORT, () => {
