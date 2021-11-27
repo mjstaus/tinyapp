@@ -94,7 +94,7 @@ app.get("/registration", (req, res) => {
 app.post("/registration", (req, res) => {
   const id = generateRandomString();
   users[id] = new User(id, req.body.email, req.body.password);
-  res.redirect("urls");
+  res.cookie("user_id", id).redirect("/urls");
 });
 
 app.listen(PORT, () => {
