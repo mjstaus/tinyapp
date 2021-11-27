@@ -125,6 +125,11 @@ app.post("/registration", (req, res) => {
   res.cookie("user_id", id).redirect("urls");
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("users_login", templateVars);
+});
+
 app.listen(PORT, () => {
   console.log(`Tinyapp listening on port ${PORT}!🦄`);
 });
