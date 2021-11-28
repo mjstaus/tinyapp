@@ -20,16 +20,26 @@ const generateRandomString = (x) => {
   return Math.random().toString(36).slice(x + 1);
 };
 
-const emailLookup = (object, email) => { //Searches for email in object - returns true if email is present
+const emailLookup = (object, email) => { 
   for (property in object) {
     if (email === object[property]["email"]) return object[property];
   }return undefined;
 }
 
+//Searches for urls associated with inputed user_id
+const urlsForUser = (id) => {
+  const userURLS = {}
+  for(object in urlDatabase){
+    if(urlDatabase[object].userID === id){
+      userURLS[object] = urlDatabase[object]
+    }
+  }return userURLS
+}
+
 ///// OBJECTS /////
 //////////////////
 const urlDatabase = {
-  b2xVn2: {longURL: "http://www.lighthouselabs.ca", userID: ""},
+  b2xVn2: {longURL: "http://www.lighthouselabs.ca", userID: "user1"},
   "9sm5xK": {longURL: "http://www.google.com", userID: ""}
 };
 class User {
@@ -58,8 +68,9 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  const userURLs = urlsForUser(req.cookies["user_id"])
   const templateVars = {
-    urls: urlDatabase,
+    urls: userURLs,
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
