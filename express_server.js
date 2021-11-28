@@ -20,21 +20,21 @@ const generateRandomString = (x) => {
   return Math.random().toString(36).slice(x + 1);
 };
 
-const emailLookup = (object, email) => { 
-  for (property in object) {
+const emailLookup = (object, email) => {
+  for (let property in object) {
     if (email === object[property]["email"]) return object[property];
-  }return undefined;
-}
+  } return undefined;
+};
 
 //Searches for urls associated with inputed user_id
 const urlsForUser = (id) => {
-  const userURLS = {}
-  for(object in urlDatabase){
-    if(urlDatabase[object].userID === id){
-      userURLS[object] = urlDatabase[object]
+  const userURLS = {};
+  for (let object in urlDatabase) {
+    if (urlDatabase[object].userID === id) {
+      userURLS[object] = urlDatabase[object];
     }
-  }return userURLS
-}
+  } return userURLS;
+};
 
 ///// OBJECTS /////
 //////////////////
@@ -55,7 +55,7 @@ const users = {
     email: "mjstaus@gmail.com",
     password: "password",
   }
-}
+};
 
 ///// ROUTES /////
 /////////////////
@@ -68,7 +68,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userURLs = urlsForUser(req.cookies["user_id"])
+  const userURLs = urlsForUser(req.cookies["user_id"]);
   const templateVars = {
     urls: userURLs,
     user: users[req.cookies["user_id"]]
@@ -79,14 +79,14 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6);
   urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.cookies.user_id };
-  console.log(urlDatabase)
+  console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
-  if(!users[req.cookies["user_id"]]){
-    res.redirect("/login")
-  };
+  if (!users[req.cookies["user_id"]]) {
+    res.redirect("/login");
+  }
   const templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]],
@@ -104,15 +104,19 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  const shortURL = req.params.id
-  const longURL = req.body.longURL
-  urlDatabase[shortURL].longURL = longURL;
+  const shortURL = req.params.id;
+  const longURL = req.body.longURL;
+  if(req.cookies["user_id"] === urlDatabase[shortURL].userID){
+    urlDatabase[shortURL].longURL = longURL;
+  }
   res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
-  delete urlDatabase[shortURL];
+  if(req.cookies["user_id"] === urlDatabase[shortURL].userID){
+    delete urlDatabase[shortURL];
+  }
   res.redirect("/urls");
 });
 
@@ -129,9 +133,9 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = emailLookup(users, email)
-  if(!user || user.password !== password){
-    res.status(403).send("Invalid email address and/or password")
+  const user = emailLookup(users, email);
+  if (!user || user.password !== password) {
+    res.status(403).send("Invalid email address and/or password");
   }
   res.cookie("user_id", user.id).redirect("/urls");
 });
@@ -146,20 +150,20 @@ app.get("/registration", (req, res) => {
 });
 
 app.post("/registration", (req, res) => {
-  const email = req.body.email
-  const password = req.body.password
-  console.log('users:', users)
-  console.log("email:", email)
-  console.log("email lookup:", emailLookup(users, email))
-  if(!email || !password){
-    res.status(400).send("Please enter a valid email address and password")
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log('users:', users);
+  console.log("email:", email);
+  console.log("email lookup:", emailLookup(users, email));
+  if (!email || !password) {
+    res.status(400).send("Please enter a valid email address and password");
   }
-  if(emailLookup(users, email)){
-    res.status(400).send(`Email address ${email} already in use`)
+  if (emailLookup(users, email)) {
+    res.status(400).send(`Email address ${email} already in use`);
   }
   const id = generateRandomString(6);
   users[id] = new User(id, email, password);
-  console.log(users)
+  console.log(users);
   res.cookie("user_id", id).redirect("urls");
 });
 
