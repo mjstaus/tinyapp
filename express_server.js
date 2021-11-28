@@ -29,8 +29,8 @@ const emailLookup = (object, email) => { //Searches for email in object - return
 ///// OBJECTS /////
 //////////////////
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b2xVn2: {longURL: "http://www.lighthouselabs.ca", userID: ""},
+  "9sm5xK": {longURL: "http://www.google.com", userID: ""}
 };
 class User {
   constructor(id, email, password) {
@@ -67,7 +67,8 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6);
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.cookies.user_id };
+  console.log(urlDatabase)
   res.redirect(`urls/${shortURL}`);
 });
 
@@ -85,14 +86,16 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: users[req.cookies["user_id"]],
   };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  const shortURL = req.params.id
+  const longURL = req.body.longURL
+  urlDatabase[shortURL].longURL = longURL;
   res.redirect("/urls");
 });
 
@@ -103,7 +106,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 

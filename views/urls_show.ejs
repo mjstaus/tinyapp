@@ -24,14 +24,14 @@
       </div>
       <div class="card-footer text-muted">
         <h3 class="card-title">EDIT</h3>
-        <form class="form-inline" name="longURL" action="/urls/:id" method="POST">
+        <form class="form-inline" name="longURL" action="/urls/<%=shortURL%>" method="POST">
           <div class="form-group">
             <label for="longURL">New URL:</label>
             <input
               class="form-control"
               type="text"
               name="longURL"
-              placeholder="http://"
+              placeholder="<%=longURL%>"
               style="width: 300px; margin: 1em"
             />
             <button type="submit" class="btn btn-primary">Submit</button>
