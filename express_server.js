@@ -20,30 +20,11 @@ app.use(cookieSession({
 const bcrypt = require("bcrypt");
 
 ///// HELPER FUNCTIONS /////
-////////////////////////////
-const { getUserByEmail } = require("./helpers");
-
-//Generate random string of x number alphanumeric characters
-const generateRandomString = (x) => {
-  return Math.random().toString(36).slice(x + 1);
-};
-
-//Searches for urls associated with inputed user_id
-const urlsForUser = (id) => {
-  const userURLS = {};
-  for (let object in urlDatabase) {
-    if (urlDatabase[object].userID === id) {
-      userURLS[object] = urlDatabase[object];
-    }
-  } return userURLS;
-};
+const { getUserByEmail, generateRandomString, getUrlsByUser } = require("./helpers");
 
 ///// OBJECTS /////
-//////////////////
-const urlDatabase = {
-  b2xVn2: {longURL: "http://www.lighthouselabs.ca", userID: "user1"},
-  "9sm5xK": {longURL: "http://www.google.com", userID: ""}
-};
+
+const urlDatabase = {};
 class User {
   constructor(id, email, password) {
     this.id = id;
@@ -54,7 +35,7 @@ class User {
 const users = {};
 
 ///// ROUTES /////
-/////////////////
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -64,7 +45,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userURLs = urlsForUser(req.session.user_id);
+  const userURLs = getUrlsByUser(urlDatabase, req.session.user_id);
   const templateVars = {
     urls: userURLs,
     user: users[req.session.user_id]
