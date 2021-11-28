@@ -12,6 +12,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
+const bcrypt = require('bcrypt');
+
 
 ///// HELPER FUNCTIONS /////
 ////////////////////////////
@@ -106,7 +108,7 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = req.body.longURL;
-  if(req.cookies["user_id"] === urlDatabase[shortURL].userID){
+  if (req.cookies["user_id"] === urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = longURL;
   }
   res.redirect("/urls");
@@ -114,7 +116,7 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
-  if(req.cookies["user_id"] === urlDatabase[shortURL].userID){
+  if (req.cookies["user_id"] === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
   }
   res.redirect("/urls");
@@ -131,10 +133,9 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
   const user = emailLookup(users, email);
-  if (!user || user.password !== password) {
+  if (!user || !bcrypt.compareSync(password, user.password)) {
     res.status(403).send("Invalid email address and/or password");
   }
   res.cookie("user_id", user.id).redirect("/urls");
@@ -152,9 +153,7 @@ app.get("/registration", (req, res) => {
 app.post("/registration", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log('users:', users);
-  console.log("email:", email);
-  console.log("email lookup:", emailLookup(users, email));
+  const hashedPassword = bcrypt.hashSync(password, 10);
   if (!email || !password) {
     res.status(400).send("Please enter a valid email address and password");
   }
@@ -162,8 +161,7 @@ app.post("/registration", (req, res) => {
     res.status(400).send(`Email address ${email} already in use`);
   }
   const id = generateRandomString(6);
-  users[id] = new User(id, email, password);
-  console.log(users);
+  users[id] = new User(id, email, hashedPassword);
   res.cookie("user_id", id).redirect("urls");
 });
 
