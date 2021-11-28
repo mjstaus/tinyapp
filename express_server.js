@@ -21,15 +21,11 @@ const bcrypt = require("bcrypt");
 
 ///// HELPER FUNCTIONS /////
 ////////////////////////////
+const { getUserByEmail } = require("./helpers")
+
 //Generate random string of x number alphanumeric characters
 const generateRandomString = (x) => {
   return Math.random().toString(36).slice(x + 1);
-};
-
-const emailLookup = (object, email) => {
-  for (let property in object) {
-    if (email === object[property]["email"]) return object[property];
-  } return undefined;
 };
 
 //Searches for urls associated with inputed user_id
@@ -132,7 +128,7 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = emailLookup(users, email);
+  const user = getUserByEmail(users, email);
   if (!user || !bcrypt.compareSync(password, user.password)) {
     res.status(403).send("Invalid email address and/or password");
   }
@@ -157,7 +153,7 @@ app.post("/registration", (req, res) => {
   if (!email || !password) {
     res.status(400).send("Please enter a valid email address and password");
   }
-  if (emailLookup(users, email)) {
+  if (getUserByEmail(users, email)) {
     res.status(400).send(`Email address ${email} already in use`);
   }
   const id = generateRandomString(6);
