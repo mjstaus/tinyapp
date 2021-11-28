@@ -9,11 +9,15 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
+const cookieSession = require("cookie-session");
+app.use(cookieSession({
+  name: 'session',
+  keys: ["key1"],
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
 
-const bcrypt = require('bcrypt');
-
+const bcrypt = require("bcrypt");
 
 ///// HELPER FUNCTIONS /////
 ////////////////////////////
@@ -51,13 +55,7 @@ class User {
     this.password = password;
   }
 }
-const users = {
-  user1: {
-    id: "user1",
-    email: "mjstaus@gmail.com",
-    password: "password",
-  }
-};
+const users = {};
 
 ///// ROUTES /////
 /////////////////
@@ -70,28 +68,28 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userURLs = urlsForUser(req.cookies["user_id"]);
+  const userURLs = urlsForUser(req.session.user_id);
   const templateVars = {
     urls: userURLs,
-    user: users[req.cookies["user_id"]]
+    user: users[req.session.user_id]
   };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6);
-  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.cookies.user_id };
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.session.user_id };
   console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!users[req.cookies["user_id"]]) {
+  if (!users[req.session.user_id]) {
     res.redirect("/login");
   }
   const templateVars = {
     urls: urlDatabase,
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
   };
   res.render("urls_new", templateVars);
 });
@@ -100,7 +98,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
   };
   res.render("urls_show", templateVars);
 });
@@ -108,7 +106,7 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = req.body.longURL;
-  if (req.cookies["user_id"] === urlDatabase[shortURL].userID) {
+  if (req.session.user_id === urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = longURL;
   }
   res.redirect("/urls");
@@ -116,7 +114,7 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
-  if (req.cookies["user_id"] === urlDatabase[shortURL].userID) {
+  if (req.session.user_id === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
   }
   res.redirect("/urls");
@@ -128,7 +126,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]] };
+  const templateVars = { user: users[req.session.user_id] };
   res.render("users_login", templateVars);
 });
 
@@ -138,15 +136,17 @@ app.post("/login", (req, res) => {
   if (!user || !bcrypt.compareSync(password, user.password)) {
     res.status(403).send("Invalid email address and/or password");
   }
-  res.cookie("user_id", user.id).redirect("/urls");
+  req.session.user_id = user.id;
+  res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id").redirect("/urls");
+  req.session = null;
+  res.redirect("/urls");
 });
 
 app.get("/registration", (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]] };
+  const templateVars = { user: users[req.session.user_id] };
   res.render("user_registration", templateVars);
 });
 
@@ -162,7 +162,8 @@ app.post("/registration", (req, res) => {
   }
   const id = generateRandomString(6);
   users[id] = new User(id, email, hashedPassword);
-  res.cookie("user_id", id).redirect("urls");
+  req.session.user_id = id;
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
