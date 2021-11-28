@@ -4,4 +4,4 @@ const getUserByEmail = (database, email) => {
   } return undefined;
 };
 
-module.exports = { getUserByEmail }
+module.exports = { getUserByEmail };

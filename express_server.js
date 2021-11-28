@@ -21,7 +21,7 @@ const bcrypt = require("bcrypt");
 
 ///// HELPER FUNCTIONS /////
 ////////////////////////////
-const { getUserByEmail } = require("./helpers")
+const { getUserByEmail } = require("./helpers");
 
 //Generate random string of x number alphanumeric characters
 const generateRandomString = (x) => {
