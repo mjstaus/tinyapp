@@ -1,34 +1,45 @@
 <%-include("partials/_header")%>
 
-  <main class="container" style="margin: 1em;">
+<div class="container">
     <% if(!user){ %>
-    <div class="alert alert-warning" role="alert">
-      Please login or sign up to view your URLs
+    <div class="row">
+      <div class="alert alert-warning mt-3" role="alert">
+        Please login or sign up to view your URLs
+      </div>
     </div>
     <% } %>
-    <h3>My URLs</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(let url in urls) { %>
+
+    <div class="row">
+      <div class="col-10 offset-1 mt-3">
+      <h3>My URLs</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Short URL</th>
+            <th scope="col">Long URL</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let url in urls) { %>
           <tr>
             <td><%= url %></td>
             <td><%= urls[url].longURL %></td>
-            <td><a href ="/urls/<%=url%>" class= "btn btn-outline-primary">EDIT</a></td>
-            <td><form method="POST" action="/urls/<%=url%>/delete">
-              <button class="btn btn-outline-danger">DELETE</button>
-            </form></td>
+            <td>
+              <a href="/urls/<%=url%>" class="btn btn-outline-primary">EDIT</a>
+            </td>
+            <td>
+              <form method="POST" action="/urls/<%=url%>/delete">
+                <button class="btn btn-outline-danger">DELETE</button>
+              </form>
+            </td>
           </tr>
-        <% } %>
-      </tbody>
-    </table>
-  </main>
-  
-  <%-include("partials/_footer")%>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%-include("partials/_footer")%>

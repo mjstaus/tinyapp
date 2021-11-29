@@ -1,45 +1,42 @@
 <%-include("partials/_header")%>
 
-<main class="col-4 offset-4">
-  <div class="card">
-    <div class="card-body">
-      <h3 class="card-title text-center">Login</h3>
-      <form class="needs-validation" action="/login" method="POST" novalidate>
-        <div class="form-group mb-2">
-          <div class="mb-3">
-            <label for="email" class="form-label">Email Address:</label>
-            <input
-              class="form-control"
-              type="email"
-              name="email"
-              placeholder="email@example.com"
-              style="width: 300px; margin: 1em"
-              required
-            />
-            <div class="invalid-feedback">
-              Please enter a valid email address
+<div class="container">
+  <div class="row">
+    <div class="col-6 offset-3 mt-3">
+        <h3>Login</h3>
+        <form class="needs-validation" action="/login" method="POST" novalidate>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input
+                class="form-control"
+                type="email"
+                name="email"
+                placeholder="example@email.com"
+                required
+              />
+              <div class="invalid-feedback">
+                Please enter a valid email address
+              </div>
             </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                class="form-control"
+                type="password"
+                name="password"
+                placeholder="password"
+                required
+              />
+              <div class="invalid-feedback">Please enter a password</div>
+            </div>
+            <div class="mt-3">
+              <button type="submit" class="btn btn-primary">Submit</button>
           </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Password:</label>
-            <input
-              class="form-control"
-              type="password"
-              name="password"
-              placeholder="password"
-              style="width: 300px; margin: 1em"
-              required
-            />
-            <div class="invalid-feedback">Please enter a password</div>
-          </div>
-          <div class="mb-6 text-center">
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
-</main>
+</div>
 
 <script>
   (function () {
