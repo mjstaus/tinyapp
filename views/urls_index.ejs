@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<%-include("partials/_header")%>
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
-</head>
 <body>
-  <div id="header"><%- include('partials/_navbar') %></div>
-  <main style="margin: 1em;">
+
+  <div id="navbar"><%- include('partials/_navbar') %></div>
+
+  <main class="container" style="margin: 1em;">
     <% if(!user){ %>
     <div class="alert alert-warning" role="alert">
       Please login or sign up to view your URLs
