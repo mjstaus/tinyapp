@@ -35,11 +35,6 @@ class User {
 const users = {};
 
 ///// ROUTES /////
-
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -142,6 +137,10 @@ app.post("/registration", (req, res) => {
   req.session.user_id = id;
   res.redirect("/urls");
 });
+
+app.get("/*", (req, res) => {
+  res.status(404).send("Oops! Page Not Found!")
+})
 
 app.listen(PORT, () => {
   console.log(`Tinyapp listening on port ${PORT}!🦄`);
