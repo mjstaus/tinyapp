@@ -1,9 +1,5 @@
 <%-include("partials/_header")%>
 
-<body>
-
-  <div id="navbar"><%- include('partials/_navbar') %></div>
-
   <main class="container" style="margin: 1em;">
     <% if(!user){ %>
     <div class="alert alert-warning" role="alert">
@@ -34,6 +30,5 @@
       </tbody>
     </table>
   </main>
+  
   <%-include("partials/_footer")%>
-</body>
-</html>

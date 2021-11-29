@@ -1,84 +1,72 @@
 <%-include("partials/_header")%>
 
-  <body class="d-flex flex-column vh-100">
-    <div id="navbar"><%- include('partials/_navbar') %></div>
-
-    <main class="col-4 offset-4">
-      <div class="card">
-        <div class="card-body">
-          <h3 class="card-title text-center">Login</h3>
-          <form
-            class="needs-validation"
-            action="/login"
-            method="POST"
-            novalidate
-          >
-            <div class="form-group mb-2">
-              <div class="mb-3">
-                <label for="email" class="form-label">Email Address:</label>
-                <input
-                  class="form-control"
-                  type="email"
-                  name="email"
-                  placeholder="email@example.com"
-                  style="width: 300px; margin: 1em"
-                  required
-                />
-                <div class="invalid-feedback">
-                  Please enter a valid email address
-                </div>
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">Password:</label>
-                <input
-                  class="form-control"
-                  type="password"
-                  name="password"
-                  placeholder="password"
-                  style="width: 300px; margin: 1em"
-                  required
-                />
-                <div class="invalid-feedback">Please enter a password</div>
-              </div>
-              <div class="mb-6 text-center">
-                <button type="submit" class="btn btn-primary">Submit</button>
-              </div>
+<main class="col-4 offset-4">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title text-center">Login</h3>
+      <form class="needs-validation" action="/login" method="POST" novalidate>
+        <div class="form-group mb-2">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address:</label>
+            <input
+              class="form-control"
+              type="email"
+              name="email"
+              placeholder="email@example.com"
+              style="width: 300px; margin: 1em"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter a valid email address
             </div>
-          </form>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input
+              class="form-control"
+              type="password"
+              name="password"
+              placeholder="password"
+              style="width: 300px; margin: 1em"
+              required
+            />
+            <div class="invalid-feedback">Please enter a password</div>
+          </div>
+          <div class="mb-6 text-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
         </div>
-      </div>
-    </main>
-    <%-include("partials/_footer")%>
+      </form>
+    </div>
+  </div>
+</main>
 
-    <script>
-      (function () {
-        "use strict";
-        window.addEventListener(
-          "load",
-          function () {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            const forms = document.getElementsByClassName("needs-validation");
-            // Loop over them and prevent submission
-            const validation = Array.prototype.filter.call(
-              forms,
-              function (form) {
-                form.addEventListener(
-                  "submit",
-                  function (event) {
-                    if (form.checkValidity() === false) {
-                      event.preventDefault();
-                      event.stopPropagation();
-                    }
-                    form.classList.add("was-validated");
-                  },
-                  false
-                );
+<script>
+  (function () {
+    "use strict";
+    window.addEventListener(
+      "load",
+      function () {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.getElementsByClassName("needs-validation");
+        // Loop over them and prevent submission
+        const validation = Array.prototype.filter.call(forms, function (form) {
+          form.addEventListener(
+            "submit",
+            function (event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
               }
-            );
-          },
-          false
-        );
-      })();
-    </script>
-  </body>
-</html>
+              form.classList.add("was-validated");
+            },
+            false
+          );
+        });
+      },
+      false
+    );
+  })();
+</script>
+
+<%-include("partials/_footer")%>

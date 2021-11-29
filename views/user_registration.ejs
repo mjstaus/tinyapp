@@ -1,10 +1,6 @@
 <%-include("partials/_header")%>
 
-  <body>
-
-    <div id="navbar"><%- include('partials/_navbar') %></div>
-
-    <main style="margin: 1em;">
+    <main class="container">
       <h3>Create a TinyApp Account</h3>
 
       <form class="needs-validation" action="/registration" method="POST" novalidate>
@@ -26,8 +22,6 @@
 
     </main>
 
-    <%-include("partials/_footer")%>
-    
     <script>
       (function() {
         'use strict';
@@ -47,5 +41,7 @@
         }, false);
       })();
       </script>
-  </body>
-</html>
+
+<%-include("partials/_footer")%>
+    
+   
