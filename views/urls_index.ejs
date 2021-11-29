@@ -9,7 +9,7 @@
   <title>TinyApp</title>
 </head>
 <body>
-  <div id="header"><%- include('partials/_header') %></div>
+  <div id="header"><%- include('partials/_navbar') %></div>
   <main style="margin: 1em;">
     <% if(!user){ %>
     <div class="alert alert-warning" role="alert">
@@ -40,6 +40,6 @@
       </tbody>
     </table>
   </main>
-  <%-include("./partials/footer")%>
+  <%-include("partials/_footer")%>
 </body>
 </html>
