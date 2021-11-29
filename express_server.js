@@ -5,22 +5,28 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
-// Body-parser library will convert the request body from a Buffer into string that we can read. It will then add the data to the req object under the key body.//
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
 
 const cookieSession = require("cookie-session");
-app.use(cookieSession({
-  name: 'session',
-  keys: ["key1"],
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}));
 
 const bcrypt = require("bcrypt");
 
-///// HELPER FUNCTIONS /////
-const { getUserByEmail, generateRandomString, getUrlsByUser } = require("./helpers");
+const {
+  getUserByEmail,
+  generateRandomString,
+  getUrlsByUser,
+} = require("./helpers");
+
+//////// MIDDLEWARE ////////
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["key1"],
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  })
+);
 
 ///// OBJECTS /////
 
@@ -33,6 +39,13 @@ class User {
   }
 }
 const users = {};
+class AppError extends Error {
+  constructor(status, message) {
+    super();
+    this.status = status;
+    this.message = message;
+  }
+}
 
 ///// ROUTES /////
 app.get("/urls.json", (req, res) => {
@@ -43,21 +56,24 @@ app.get("/urls", (req, res) => {
   const userURLs = getUrlsByUser(urlDatabase, req.session.user_id);
   const templateVars = {
     urls: userURLs,
-    user: users[req.session.user_id]
+    user: users[req.session.user_id],
   };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6);
-  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.session.user_id };
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userID: req.session.user_id,
+  };
   console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
   if (!users[req.session.user_id]) {
-    res.redirect("/login");
+    throw new AppError(403, "Please login or sign up to create new URL")
   }
   const templateVars = {
     urls: urlDatabase,
@@ -78,17 +94,25 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = req.body.longURL;
-  if (req.session.user_id === urlDatabase[shortURL].userID) {
-    urlDatabase[shortURL].longURL = longURL;
+  const user = req.session.user_id 
+  if(!user){
+    throw new AppError(403, "Please login to update your URL")
   }
-  res.redirect("/urls");
+  if (user !== urlDatabase[shortURL].userID) {
+    throw new AppError(401, "This URL does not belong to you! Update your own URLs!")
+  } 
+  urlDatabase[shortURL].longURL = longURL;
+  res.redirect(`/urls/${shortURL}`);
+  
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
-  if (req.session.user_id === urlDatabase[shortURL].userID) {
-    delete urlDatabase[shortURL];
+  const user = req.session.user_id 
+  if (user !== urlDatabase[shortURL].userID) {
+    throw new AppError(401, "This URL does not belong to you! Delete your own URLs!")
   }
+  delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
 
@@ -106,7 +130,7 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = getUserByEmail(users, email);
   if (!user || !bcrypt.compareSync(password, user.password)) {
-    res.status(403).send("Invalid email address and/or password");
+    throw new AppError(403, "Invalid email address and/or password");
   }
   req.session.user_id = user.id;
   res.redirect("/urls");
@@ -127,10 +151,10 @@ app.post("/registration", (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (!email || !password) {
-    res.status(400).send("Please enter a valid email address and password");
+    throw new AppError(400, "Please enter a valid email address and password");
   }
   if (getUserByEmail(users, email)) {
-    res.status(400).send(`Email address ${email} already in use`);
+    throw new AppError(400, `Email address ${email} already in use`);
   }
   const id = generateRandomString(6);
   users[id] = new User(id, email, hashedPassword);
@@ -138,9 +162,21 @@ app.post("/registration", (req, res) => {
   res.redirect("/urls");
 });
 
-app.get("/*", (req, res) => {
-  res.status(404).send("Oops! Page Not Found!")
-})
+app.all("*", (req, res, next) => {
+  next(new AppError(404, "Sorry, this page isn't available :("));
+});
+
+app.use((err, req, res, next) => {
+  const { status = 500, message = "Uh oh! Something went wrong" } = err;
+  const templateVars = {
+    user: users[req.session.user_id],
+    status: status,
+    message: message,
+  };
+  console.log(status);
+  console.log(message);
+  res.status(status).render("error", templateVars);
+});
 
 app.listen(PORT, () => {
   console.log(`Tinyapp listening on port ${PORT}!🦄`);
