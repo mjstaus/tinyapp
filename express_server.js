@@ -62,7 +62,7 @@ app.get("/urls", (req, res) => {
     urls: userURLs,
     user: users[req.session.user_id],
   };
-  res.render("urls_index", templateVars);
+  res.render("urls/urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -83,7 +83,7 @@ app.get("/urls/new", (req, res) => {
     urls: urlDatabase,
     user: users[req.session.user_id],
   };
-  res.render("urls_new", templateVars);
+  res.render("urls/urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -92,7 +92,7 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase[req.params.id].longURL,
     user: users[req.session.user_id],
   };
-  res.render("urls_show", templateVars);
+  res.render("urls/urls_show", templateVars);
 });
 
 app.put("/urls/:id", (req, res) => {
@@ -127,7 +127,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = { user: users[req.session.user_id] };
-  res.render("users_login", templateVars);
+  res.render("users/users_login", templateVars);
 });
 
 app.post("/login", (req, res) => {
@@ -147,7 +147,7 @@ app.post("/logout", (req, res) => {
 
 app.get("/registration", (req, res) => {
   const templateVars = { user: users[req.session.user_id] };
-  res.render("user_registration", templateVars);
+  res.render("users/user_registration", templateVars);
 });
 
 app.post("/registration", (req, res) => {
