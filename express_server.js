@@ -62,7 +62,7 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   if (!users[req.session.user_id]) {
-    throw new AppError(403, "Please login or sign up to create new URL")
+    throw new AppError(403, "Please login or sign up to create new URL");
   }
   const templateVars = {
     urls: urlDatabase,
@@ -83,13 +83,13 @@ app.get("/urls/:shortURL", (req, res) => {
 app.put("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
-  const user = req.session.user_id 
-  if(!user){
-    throw new AppError(403, "Please login to update your URL")
+  const user = req.session.user_id;
+  if (!user) {
+    throw new AppError(403, "Please login to update your URL");
   }
   if (user !== urlDatabase[shortURL].userID) {
-    throw new AppError(401, "This URL does not belong to you! Update your own URLs!")
-  } 
+    throw new AppError(401, "This URL does not belong to you! Update your own URLs!");
+  }
   urlDatabase[shortURL].longURL = longURL;
   res.redirect(`/urls/${shortURL}`);
   
@@ -97,9 +97,9 @@ app.put("/urls/:shortURL", (req, res) => {
 
 app.delete("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const user = req.session.user_id 
+  const user = req.session.user_id;
   if (user !== urlDatabase[shortURL].userID) {
-    throw new AppError(401, "This URL does not belong to you! Delete your own URLs!")
+    throw new AppError(401, "This URL does not belong to you! Delete your own URLs!");
   }
   delete urlDatabase[shortURL];
   res.redirect("/urls");
