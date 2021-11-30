@@ -1,7 +1,8 @@
 <%-include("partials/_header")%>
 
 <div class="container">
-    <div class="card text-center">
+  <div class="row">
+    <div class="card text-center col-6 offset-3 mt-3">
       <div class="card-header"></div>
       <div class="card-body">
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
@@ -11,7 +12,7 @@
       </div>
       <div class="card-footer text-muted">
         <h3 class="card-title">EDIT</h3>
-        <form class="form-inline" name="longURL" action="/urls/<%=shortURL%>" method="POST">
+        <form class="form-inline" name="longURL" method="POST" action="/urls/<%=shortURL%>?_method=PUT">
           <div class="form-group">
             <label for="longURL">New URL:</label>
             <input
@@ -25,6 +26,15 @@
           </div>
         </form>
       </div>
+
+      <div class="card-body text-muted">
+        <h3 class="card-title">DELETE</h3>
+        <form name="delete" method="POST" action="/urls/<%=shortURL%>?_method=DELETE">
+          <button class="btn btn-danger">DELETE</button>
+        </form>
+
+      </div>
+    </div>
   </div>
 </div>
 

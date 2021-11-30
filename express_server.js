@@ -11,6 +11,8 @@ const cookieSession = require("cookie-session");
 
 const bcrypt = require("bcrypt");
 
+const methodOverride = require("method-override");
+
 const {
   getUserByEmail,
   generateRandomString,
@@ -27,6 +29,8 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
+
+app.use(methodOverride("_method"));
 
 ///// OBJECTS /////
 
@@ -91,7 +95,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = req.body.longURL;
   const user = req.session.user_id 
@@ -106,7 +110,7 @@ app.post("/urls/:id", (req, res) => {
   
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const user = req.session.user_id 
   if (user !== urlDatabase[shortURL].userID) {
