@@ -19,6 +19,10 @@ const {
 const { AppError } = require("./classes/AppError");
 const { User } = require("./classes/User");
 
+///// DATABASES /////
+const urlDatabase = {};
+const users = {};
+
 //////// MIDDLEWARE ////////
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -31,10 +35,6 @@ app.use(
 );
 
 app.use(methodOverride("_method"));
-
-///// DATABASES /////
-const urlDatabase = {};
-const users = {};
 
 ///// ROUTES /////
 app.get("/urls.json", (req, res) => {
@@ -155,6 +155,7 @@ app.all("*", (req, res, next) => {
   next(new AppError(404, "Sorry, this page isn't available :("));
 });
 
+///// ERROR HANDLER MIDDLEWARE /////
 app.use((err, req, res, next) => {
   const { status = 500, message = "Uh oh! Something went wrong" } = err;
   const templateVars = {
@@ -167,6 +168,7 @@ app.use((err, req, res, next) => {
   res.status(status).render("error", templateVars);
 });
 
+///// APP LISTENING /////
 app.listen(PORT, () => {
   console.log(`Tinyapp listening on port ${PORT}!🦄`);
 });
