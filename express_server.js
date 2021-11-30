@@ -71,17 +71,17 @@ app.get("/urls/new", (req, res) => {
   res.render("urls/urls_new", templateVars);
 });
 
-app.get("/urls/:id", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.session.user_id],
   };
   res.render("urls/urls_show", templateVars);
 });
 
-app.put("/urls/:id", (req, res) => {
-  const shortURL = req.params.id;
+app.put("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   const user = req.session.user_id 
   if(!user){
@@ -95,8 +95,8 @@ app.put("/urls/:id", (req, res) => {
   
 });
 
-app.delete("/urls/:id", (req, res) => {
-  const shortURL = req.params.id;
+app.delete("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
   const user = req.session.user_id 
   if (user !== urlDatabase[shortURL].userID) {
     throw new AppError(401, "This URL does not belong to you! Delete your own URLs!")
