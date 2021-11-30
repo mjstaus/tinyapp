@@ -6,11 +6,8 @@ const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
-
 const cookieSession = require("cookie-session");
-
 const bcrypt = require("bcrypt");
-
 const methodOverride = require("method-override");
 
 const {
@@ -18,6 +15,9 @@ const {
   generateRandomString,
   getUrlsByUser,
 } = require("./helpers");
+
+const { AppError } = require("./classes/AppError");
+const { User } = require("./classes/User");
 
 //////// MIDDLEWARE ////////
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,24 +32,9 @@ app.use(
 
 app.use(methodOverride("_method"));
 
-///// OBJECTS /////
-
+///// DATABASES /////
 const urlDatabase = {};
-class User {
-  constructor(id, email, password) {
-    this.id = id;
-    this.email = email;
-    this.password = password;
-  }
-}
 const users = {};
-class AppError extends Error {
-  constructor(status, message) {
-    super();
-    this.status = status;
-    this.message = message;
-  }
-}
 
 ///// ROUTES /////
 app.get("/urls.json", (req, res) => {
