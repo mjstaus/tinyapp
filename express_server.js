@@ -72,6 +72,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  if(!urlDatabase[req.params.shortURL]){
+    throw new AppError(404, "Sorry, this page isn't available")
+  };
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
