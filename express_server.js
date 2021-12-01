@@ -56,7 +56,6 @@ app.post("/urls", (req, res) => {
     longURL: req.body.longURL,
     userID: req.session.user_id,
   };
-  console.log(urlDatabase);
   res.redirect(`urls/${shortURL}`);
 });
 
@@ -99,6 +98,10 @@ app.put("/urls/:shortURL", (req, res) => {
 });
 
 app.delete("/urls/:shortURL", (req, res) => {
+  if (!users[req.session.user_id]) {
+    throw new AppError(403, "Please login or sign up");
+  }
+
   const shortURL = req.params.shortURL;
   const user = req.session.user_id;
   if (user !== urlDatabase[shortURL].userID) {
@@ -166,8 +169,6 @@ app.use((err, req, res, next) => {
     status: status,
     message: message,
   };
-  console.log(status);
-  console.log(message);
   res.status(status).render("error", templateVars);
 });
 
